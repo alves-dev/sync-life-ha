@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from typing import cast, Any
 
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
@@ -9,7 +10,7 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util import dt as dt_util
 
 from . import service
-from .model import VehicleMileage, Vehicle
+from .model import VehicleMileage, Vehicle, VehicleMaintenance
 from .util import get_device_by_vehicle
 from ..const import (
     DOMAIN,
@@ -43,6 +44,20 @@ def get_sensors(hass: HomeAssistant) -> list[Any]:
         entities.append(sensor_mileage)
         entities.append(sensor_mileage_date)
         entities.append(sensor_vehicle_date)
+
+    # Sensors maintenance
+    for car in cars:
+        needs = False
+        pending = []
+        for m in car.maintenances:
+            maintenance: VehicleMaintenance = cast(VehicleMaintenance, m)
+            entities.append(MaintenanceSensor(car, maintenance))
+
+            if maintenance.bool_required:
+                needs = True
+                pending.append(maintenance.type)
+
+        entities.append(VehicleNeedsMaintenanceSensor(car, needs, pending))
 
     return entities
 
@@ -160,3 +175,61 @@ class VehicleUpdateSensor(SensorEntity, RestoreEntity):
             return
 
         self._attr_native_value = restored
+
+
+class MaintenanceSensor(SensorEntity):
+    """Sensor genérico para manutenção de veículo."""
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+    _attr_icon = "mdi:wrench"
+
+    def __init__(self, vehicle: Vehicle, maintenance: VehicleMaintenance) -> None:
+        self.vehicle = vehicle
+        self.maintenance = maintenance
+
+        self._attr_unique_id = f"vehicle_{vehicle.id}_maintenance_{maintenance.type}"
+        self._attr_name = f"{vehicle.name} {maintenance.type.replace('_', ' ').title()}"
+        self._attr_native_unit_of_measurement = "%" if maintenance.percentage is not None else None
+        self._attr_native_value = maintenance.percentage or 0
+        self._attr_device_info = get_device_by_vehicle(vehicle)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, any]:
+        """Atributos extras com informações de manutenção."""
+        return {
+            "type": self.maintenance.type,
+            "last_date": self.maintenance.last_date.isoformat() if self.maintenance.last_date else None,
+            "last_mileage": self.maintenance.last_mileage,
+            "next_date": self.maintenance.next_date.isoformat() if self.maintenance.next_date else None,
+            "next_mileage": self.maintenance.next_mileage,
+            "required": self.maintenance.bool_required,
+            "note": self.maintenance.note,
+        }
+
+    # def update_maintenance(self, percentage: float) -> None:
+    #     """Atualiza o percentual da manutenção."""
+    #     self._attr_native_value = percentage
+    #     self.schedule_update_ha_state()
+
+
+class VehicleNeedsMaintenanceSensor(BinarySensorEntity):
+    """Sensor binário que indica se o veículo precisa de manutenção."""
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+    _attr_device_class = "problem"
+    _attr_icon = "mdi:car-wrench"
+
+    def __init__(self, vehicle: Vehicle, needs: bool, pending: list[str]) -> None:
+        self.vehicle = vehicle
+        self._pending = pending
+        self._attr_unique_id = f"vehicle_{vehicle.id}_needs_maintenance"
+        self._attr_name = f"{vehicle.name} Needs Maintenance"
+        self._attr_device_info = get_device_by_vehicle(vehicle)
+        self._attr_is_on = needs
+
+    @property
+    def extra_state_attributes(self) -> dict[str, any]:
+        """Lista quais manutenções estão pendentes."""
+        return {"pending": self._pending}
