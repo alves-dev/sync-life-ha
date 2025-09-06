@@ -5,7 +5,7 @@ def get_all() -> [Vehicle]:
     return Vehicle.select()
 
 
-def get_last_km_by_vehicle(vehicle: Vehicle) -> int | None:
+def get_last_km_by_vehicle(vehicle: Vehicle) -> VehicleMileage | None:
     last_mileage: VehicleMileage = (
         VehicleMileage
         .select()
@@ -13,6 +13,4 @@ def get_last_km_by_vehicle(vehicle: Vehicle) -> int | None:
         .order_by(VehicleMileage.created_at.desc())
         .first()
     )
-    if last_mileage:
-        return last_mileage.mileage
-    return None
+    return last_mileage
