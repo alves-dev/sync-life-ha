@@ -1,0 +1,17 @@
+{
+  "domain": "synclife",
+  "name": "Sync Life",
+  "after_dependencies": [],
+  "codeowners": [
+    "@alves-dev"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/alves-dev/sync-life-ha",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/alves-dev/sync-life-ha/issues",
+  "requirements": [
+    "peewee==3.18.1"
+  ],
+  "version": "0.0.1-beta.1"
+}

@@ -1,0 +1,19 @@
+vehicle_update_mileage:
+  name: "Vehicle: update mileage"
+  description: Atualiza a kilometragem do veículo escolhido
+  fields:
+    device_id:
+      name: Veículo
+      required: true
+      selector:
+        device:
+          filter:
+            - integration: synclife
+              manufacturer: FIAT
+            - integration: synclife
+              manufacturer: HYUNDAI
+    mileage:
+      name: Kilometragem
+      required: true
+      selector:
+        number:
