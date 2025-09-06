@@ -9,6 +9,8 @@ MANAGER = 'key-object-manager'
 DB_INSTANCE = 'db-instance'
 
 SENSOR_VEHICLE_MILEAGE = 'sensor-vehicle-mileage'
+SENSOR_VEHICLE_MILEAGE_UPDATE = 'sensor-vehicle-mileage-update'
+SENSOR_VEHICLE_UPDATE = 'sensor-vehicle-update'
 
 # DATABASE
 DB_FILENAME = "sync-life.db"
