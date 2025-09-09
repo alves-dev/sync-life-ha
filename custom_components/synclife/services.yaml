@@ -12,6 +12,8 @@ vehicle_update_mileage:
               manufacturer: FIAT
             - integration: synclife
               manufacturer: HYUNDAI
+            - integration: synclife
+              manufacturer: HONDA
     mileage:
       name: Kilometragem
       required: true

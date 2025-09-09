@@ -87,11 +87,8 @@ class MileageSensor(SensorEntity, RestoreEntity):
                 _LOGGER.warning(f"Erro ao restaurar valor '{last_state.state}'")
 
     def update_mileage(self, value: int) -> None:
-        if self.native_value < value:
-            self._attr_native_value = value
-            self.schedule_update_ha_state()
-        else:
-            _LOGGER.warning(f"KM atual ({self.native_value}) é maior que o informado: {value}")
+        self._attr_native_value = value
+        self.schedule_update_ha_state()
 
     @property
     def extra_state_attributes(self) -> dict[str, any]:

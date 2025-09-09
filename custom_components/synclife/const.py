@@ -8,6 +8,8 @@ MANAGER = 'key-object-manager'
 
 DB_INSTANCE = 'db-instance'
 
+ENTRY_VEHICLES = 'entry-vehicles'
+
 SENSOR_VEHICLE_MILEAGE = 'sensor-vehicle-mileage'
 SENSOR_VEHICLE_MILEAGE_UPDATE = 'sensor-vehicle-mileage-update'
 SENSOR_VEHICLE_UPDATE = 'sensor-vehicle-update'
