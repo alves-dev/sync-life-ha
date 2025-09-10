@@ -4,7 +4,6 @@ from typing import cast, Any
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util import dt as dt_util
@@ -62,7 +61,7 @@ def get_sensors(hass: HomeAssistant) -> list[Any]:
     return entities
 
 
-class MileageSensor(SensorEntity, RestoreEntity):
+class MileageSensor(SensorEntity):
     _attr_has_entity_name = True
     _attr_native_unit_of_measurement = "km"
     _attr_name = "Mileage"
@@ -74,17 +73,6 @@ class MileageSensor(SensorEntity, RestoreEntity):
         self._attr_native_value = mileage.mileage if mileage else None
         self._attr_device_info = get_device_by_vehicle(vehicle)
         self._mileage_id = mileage.id if mileage else None
-
-    async def async_added_to_hass(self) -> None:
-        """This method is called by the Home Assistant when the entity is added"""
-        await super().async_added_to_hass()
-
-        last_state = await self.async_get_last_state()
-        if last_state is not None and last_state.state != STATE_UNKNOWN:
-            try:
-                self._attr_native_value = int(last_state.state)
-            except ValueError:
-                _LOGGER.warning(f"Erro ao restaurar valor '{last_state.state}'")
 
     def update_mileage(self, value: int) -> None:
         self._attr_native_value = value
@@ -98,7 +86,7 @@ class MileageSensor(SensorEntity, RestoreEntity):
         }
 
 
-class MileageUpdateSensor(SensorEntity, RestoreEntity):
+class MileageUpdateSensor(SensorEntity):
     """Sensor somente leitura para armazenar uma data/hora."""
 
     _attr_has_entity_name = True
@@ -118,22 +106,6 @@ class MileageUpdateSensor(SensorEntity, RestoreEntity):
         """Atualiza a data/hora do sensor."""
         self._attr_native_value = dt_util.utcnow()
         self.async_write_ha_state()
-
-    async def async_added_to_hass(self):
-        """Restaura último valor após reinício do HA."""
-        await super().async_added_to_hass()
-
-        last_state = await self.async_get_last_state()
-        if last_state is None or last_state.state in ("unknown", "unavailable"):
-            _LOGGER.warning("Não foi possível restaurar datetime anterior")
-            return
-
-        restored = dt_util.parse_datetime(last_state.state)
-        if restored is None:
-            _LOGGER.warning("Não foi possível converter a data")
-            return
-
-        self._attr_native_value = restored
 
 
 class VehicleUpdateSensor(SensorEntity, RestoreEntity):
@@ -163,7 +135,7 @@ class VehicleUpdateSensor(SensorEntity, RestoreEntity):
 
         last_state = await self.async_get_last_state()
         if last_state is None or last_state.state in ("unknown", "unavailable"):
-            _LOGGER.warning("Não foi possível restaurar datetime anterior")
+            _LOGGER.warning("Não foi possível restaurar status de: VehicleUpdateSensor")
             return
 
         restored = dt_util.parse_datetime(last_state.state)
@@ -203,11 +175,6 @@ class MaintenanceSensor(SensorEntity):
             "required": self.maintenance.bool_required,
             "note": self.maintenance.note,
         }
-
-    # def update_maintenance(self, percentage: float) -> None:
-    #     """Atualiza o percentual da manutenção."""
-    #     self._attr_native_value = percentage
-    #     self.schedule_update_ha_state()
 
 
 class VehicleNeedsMaintenanceSensor(BinarySensorEntity):
