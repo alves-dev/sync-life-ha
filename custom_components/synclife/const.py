@@ -2,6 +2,7 @@ INTEGRATION_NAME = 'Sync Life'
 DOMAIN = 'synclife'
 
 DOMAIN_VEHICLE = f'{INTEGRATION_NAME}: Vehicle'
+DOMAIN_NUTRITION = f'{INTEGRATION_NAME}: Nutrition'
 
 # KEYS
 MANAGER = 'key-object-manager'
@@ -9,6 +10,12 @@ MANAGER = 'key-object-manager'
 DB_INSTANCE = 'db-instance'
 
 ENTRY_VEHICLES = 'entry-vehicles'
+ENTRY_VEHICLES_NAME = 'Veículos'
+
+ENTRY_NUTRITION = 'entry-nutrition'
+ENTRY_NUTRITION_NAME = 'Nutrição'
+
+NUTRITION_PERSONS = 'nutrition.persons'
 
 SENSOR_VEHICLE_MILEAGE = 'sensor-vehicle-mileage'
 SENSOR_VEHICLE_MILEAGE_UPDATE = 'sensor-vehicle-mileage-update'

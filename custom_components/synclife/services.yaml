@@ -19,3 +19,20 @@ vehicle_update_mileage:
       required: true
       selector:
         number:
+
+nutrition_intake_supplement:
+  name: "Nutrition: intake supplement"
+  description: Insere um suplemento para uma pessoa
+  fields:
+    person_id:
+      name: Pessoa
+      required: true
+      selector:
+        entity:
+          domain:
+            - person
+    supplement:
+      name: Suplemento
+      required: true
+      selector:
+        text:
