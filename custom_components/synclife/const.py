@@ -3,6 +3,7 @@ DOMAIN = 'synclife'
 
 DOMAIN_VEHICLE = f'{INTEGRATION_NAME}: Vehicle'
 DOMAIN_NUTRITION = f'{INTEGRATION_NAME}: Nutrition'
+DOMAIN_FINANCE = f'{INTEGRATION_NAME}: Finance'
 
 # KEYS
 MANAGER = 'key-object-manager'
@@ -14,6 +15,9 @@ ENTRY_VEHICLES_NAME = 'Veículos'
 
 ENTRY_NUTRITION = 'entry-nutrition'
 ENTRY_NUTRITION_NAME = 'Nutrição'
+
+ENTRY_FINANCE = 'entry-finance'
+ENTRY_FINANCE_NAME = 'Financeiro'
 
 NUTRITION_PERSONS = 'nutrition.persons'
 

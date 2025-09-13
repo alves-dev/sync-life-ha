@@ -5,7 +5,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.helpers.event import async_track_time_interval, async_track_time_change
 from peewee import SqliteDatabase
 
 from .const import (
@@ -18,9 +18,12 @@ from .const import (
     ENTRY_NUTRITION,
     ENTRY_VEHICLES_NAME,
     ENTRY_NUTRITION_NAME,
-    NUTRITION_PERSONS
+    NUTRITION_PERSONS,
+    ENTRY_FINANCE,
+    ENTRY_FINANCE_NAME
 )
 from .database import db_init
+from .finance.model import init_finance_db
 from .nutrition.ha_service import (
     NUTRITION_INTAKE_SUPPLEMENT_NAME,
     nutrition_intake_supplement,
@@ -29,6 +32,7 @@ from .nutrition.ha_service import (
 from .nutrition.model import init_nutrition_db
 from .util.manager import ObjectManager
 from .vehicle.ha_service import VEHICLE_UPDATE_MILEAGE_NAME, vehicle_update_mileage
+from .finance.ha_service import FINANCE_TRANSACTION_MONTHLY_NAME, finance_transaction_monthly_schema, finance_transaction_monthly
 from .vehicle.model import init_vehicle_db, Vehicle
 from .vehicle.service import update_vehicle_maintenances
 
@@ -58,6 +62,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         manager.add(DB_INSTANCE, db)
         init_vehicle_db(db)
         init_nutrition_db(db)
+        init_finance_db(db)
 
     await hass.async_add_executor_job(setup_orm)
 
@@ -75,10 +80,21 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         schema=nutrition_intake_supplement_options()
     )
 
+    hass.services.async_register(
+        domain=DOMAIN,
+        service=FINANCE_TRANSACTION_MONTHLY_NAME,
+        service_func=finance_transaction_monthly,
+        schema=finance_transaction_monthly_schema()
+    )
+
     async def _periodic_update(now):
         await update_vehicle_maintenances(hass)
 
+    async def _daily_midnight_update(now):
+        await async_reload_all_entries(hass)
+
     async_track_time_interval(hass, _periodic_update, timedelta(hours=12))
+    async_track_time_change(hass, _daily_midnight_update, hour=0, minute=1, second=0, )
 
     return True
 
@@ -93,6 +109,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         manager.add(ENTRY_VEHICLES, entry)
     elif entry_name == ENTRY_NUTRITION_NAME:
         manager.add(ENTRY_NUTRITION, entry)
+    elif entry_name == ENTRY_FINANCE_NAME:
+        manager.add(ENTRY_FINANCE, entry)
 
     return True
 
@@ -101,3 +119,19 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     return unload_ok
+
+
+async def async_reload_all_entries(hass: HomeAssistant) -> None:
+    """
+    Reset as 00:00
+    """
+    manager: ObjectManager = hass.data[DOMAIN][MANAGER]
+
+    entry = manager.get_by_key(ENTRY_VEHICLES)
+    await hass.config_entries.async_reload(entry.entry_id)
+
+    entry = manager.get_by_key(ENTRY_NUTRITION)
+    await hass.config_entries.async_reload(entry.entry_id)
+
+    entry = manager.get_by_key(ENTRY_FINANCE)
+    await hass.config_entries.async_reload(entry.entry_id)

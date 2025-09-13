@@ -1,6 +1,6 @@
 vehicle_update_mileage:
   name: "Vehicle: update mileage"
-  description: Atualiza a kilometragem do veículo escolhido
+  description: "Atualiza a kilometragem do veículo escolhido"
   fields:
     device_id:
       name: Veículo
@@ -22,7 +22,7 @@ vehicle_update_mileage:
 
 nutrition_intake_supplement:
   name: "Nutrition: intake supplement"
-  description: Insere um suplemento para uma pessoa
+  description: "Insere um suplemento para uma pessoa"
   fields:
     person_id:
       name: Pessoa
@@ -36,3 +36,13 @@ nutrition_intake_supplement:
       required: true
       selector:
         text:
+
+finance_transaction_monthly:
+  name: "Finance: register monthly transaction"
+  description: "Registra pagamento da despesa ou recebimento da receita"
+  fields:
+    plan_id:
+      name: ID do registro
+      required: true
+      selector:
+        number:
