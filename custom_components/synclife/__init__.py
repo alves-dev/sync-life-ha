@@ -23,6 +23,10 @@ from .const import (
     ENTRY_FINANCE_NAME
 )
 from .database import db_init
+from .finance.ha_service import (
+    FINANCE_TRANSACTION_MONTHLY_NAME,
+    finance_transaction_monthly
+)
 from .finance.model import init_finance_db
 from .nutrition.ha_service import (
     NUTRITION_INTAKE_SUPPLEMENT_NAME,
@@ -32,7 +36,6 @@ from .nutrition.ha_service import (
 from .nutrition.model import init_nutrition_db
 from .util.manager import ObjectManager
 from .vehicle.ha_service import VEHICLE_UPDATE_MILEAGE_NAME, vehicle_update_mileage
-from .finance.ha_service import FINANCE_TRANSACTION_MONTHLY_NAME, finance_transaction_monthly_schema, finance_transaction_monthly
 from .vehicle.model import init_vehicle_db, Vehicle
 from .vehicle.service import update_vehicle_maintenances
 
@@ -83,8 +86,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     hass.services.async_register(
         domain=DOMAIN,
         service=FINANCE_TRANSACTION_MONTHLY_NAME,
-        service_func=finance_transaction_monthly,
-        schema=finance_transaction_monthly_schema()
+        service_func=finance_transaction_monthly
     )
 
     async def _periodic_update(now):

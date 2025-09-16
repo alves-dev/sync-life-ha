@@ -137,3 +137,73 @@ def get_all_ids_monthly() -> list[int]:
         ids.append(r.id)
 
     return ids
+
+
+def get_values_for_data_table_monthly() -> dict:
+    """
+    Retorna uma lista de contas a receber e pagar
+    """
+    values = []
+
+    incomes = (
+        FinancePlan.select().where(
+            (FinancePlan.active == 1) &
+            (FinancePlan.type == RecordType.RECEITA) &
+            (FinancePlan.periodicity == Periodicity.MENSAL)
+        )
+        .order_by(FinancePlan.day_movement)
+    )
+    expenses = (
+        FinancePlan.select().where(
+            (FinancePlan.active == 1) &
+            (FinancePlan.type == RecordType.DESPESA) &
+            (FinancePlan.periodicity == Periodicity.MENSAL) &
+            (FinancePlan.payment_method != PaymentMethod.CARTAO)
+        )
+        .order_by(FinancePlan.day_movement)
+    )
+
+    current_month = datetime.now().month
+    transactions = PlanTransaction.select().where(
+        PlanTransaction.month == current_month
+    )
+    transaction_list: list[str] = []
+    for t in transactions:
+        t = cast(PlanTransaction, t)
+        transaction_list.append(t.key())
+
+    for income in incomes:
+        income = cast(FinancePlan, income)
+        disabled = ''
+        if f'{income.id}-{current_month}' in transaction_list:
+            disabled = 'disabled'
+
+        values.append(
+            {
+                'id': income.id,
+                'name': income.name,
+                'day': income.day_movement,
+                'value': income.value if income.value is not None else 0,
+                'action': f"<button class='button' {disabled}>Receber</button>",
+                'icon': '<ha-icon icon=mdi:cash-plus style=color:green ></ha-icon>'
+            }
+        )
+
+    for expense in expenses:
+        expense = cast(FinancePlan, expense)
+        disabled = ''
+        if f'{expense.id}-{current_month}' in transaction_list:
+            disabled = 'disabled'
+
+        values.append(
+            {
+                'id': expense.id,
+                'name': expense.name,
+                'day': expense.day_movement,
+                'value': expense.value if expense.value is not None else 0,
+                'action': f"<button class='button' {disabled}>Pagar</button>",
+                'icon': '<ha-icon icon=mdi:cash-minus style=color:red ></ha-icon>'
+            }
+        )
+
+    return {'values': values}

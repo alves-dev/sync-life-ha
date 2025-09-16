@@ -1,25 +1,13 @@
 from datetime import datetime
 
-import voluptuous as vol
 from homeassistant.auth.models import User
 from homeassistant.core import ServiceCall
 
 from .model import PlanTransaction
-from .service import get_all_ids_monthly
 from ..const import DOMAIN, MANAGER, ENTRY_FINANCE
 from ..util.manager import ObjectManager
 
 FINANCE_TRANSACTION_MONTHLY_NAME = "finance_transaction_monthly"
-
-
-def finance_transaction_monthly_schema() -> vol.Schema:
-    ids = get_all_ids_monthly()
-
-    return vol.Schema(
-        {
-            vol.Required("plan_id"): vol.In(ids),
-        }
-    )
 
 
 async def finance_transaction_monthly(call: ServiceCall):

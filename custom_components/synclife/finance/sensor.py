@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.core import HomeAssistant
 
-from .service import get_values_for_sensors_total_monthly, get_values_for_sensors_pending_monthly
+from .service import (
+    get_values_for_sensors_total_monthly,
+    get_values_for_sensors_pending_monthly,
+    get_values_for_data_table_monthly
+)
 from .util import get_device_for_finance_monthly
 from ..const import (
     DOMAIN,
@@ -32,7 +37,23 @@ def get_sensors(hass: HomeAssistant) -> list[Any]:
     entities.append(PendingExpenseSensor(monthly_pending_values['expense']))
     entities.append(PendingBalanceSensor(monthly_pending_values['balance']))
 
+    data = get_values_for_data_table_monthly()
+    current_month = datetime.now().strftime('%Y-%m')
+    entities.append(TableDataSensor(data, current_month))
+
     return entities
+
+
+class TableDataSensor(SensorEntity):
+    _attr_has_entity_name = True
+    _attr_name = "Data Table"
+    _attr_icon = "mdi:table"
+
+    def __init__(self, data: dict, month: str):
+        self._attr_unique_id = "finance_monthly_data_table"
+        self._attr_native_value = month
+        self._attr_extra_state_attributes = data
+        self._attr_device_info = get_device_for_finance_monthly()
 
 
 class PendingIncomeSensor(SensorEntity):
