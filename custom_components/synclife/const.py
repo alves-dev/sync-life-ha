@@ -4,6 +4,7 @@ DOMAIN = 'synclife'
 DOMAIN_VEHICLE = f'{INTEGRATION_NAME}: Vehicle'
 DOMAIN_NUTRITION = f'{INTEGRATION_NAME}: Nutrition'
 DOMAIN_FINANCE = f'{INTEGRATION_NAME}: Finance'
+DOMAIN_SLEEP = f'{INTEGRATION_NAME}: Sleep'
 
 # KEYS
 MANAGER = 'key-object-manager'
@@ -19,7 +20,11 @@ ENTRY_NUTRITION_NAME = 'Nutrição'
 ENTRY_FINANCE = 'entry-finance'
 ENTRY_FINANCE_NAME = 'Financeiro'
 
+ENTRY_SLEEP_TRACKING = 'entry-sleep-tracking'
+ENTRY_SLEEP_TRACKING_NAME = 'Sono'
+
 NUTRITION_PERSONS = 'nutrition.persons'
+SLEEP_TRACKING_PERSONS = 'sleep.persons'
 
 SENSOR_VEHICLE_MILEAGE = 'sensor-vehicle-mileage'
 SENSOR_VEHICLE_MILEAGE_UPDATE = 'sensor-vehicle-mileage-update'

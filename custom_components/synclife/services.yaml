@@ -46,3 +46,20 @@ finance_transaction_monthly:
       required: true
       selector:
         number:
+
+sleep_event:
+  name: "Sleep: save event"
+  description: "Evento para indicar se esta acordando ou dormindo"
+  fields:
+    person_id:
+      name: Pessoa
+      required: true
+      selector:
+        entity:
+          domain:
+            - person
+    action:
+      name: Ação
+      required: true
+      selector:
+        text:

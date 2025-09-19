@@ -14,6 +14,7 @@ from ..const import (
     NUTRITION_PERSONS
 )
 from ..util.manager import ObjectManager
+from ..util.transforms import person_id_to_str
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class SupplementSummarySensor(SensorEntity):
 
     def __init__(self, person_id: str, attributes: dict, value: str = '0/0'):
         self._attr_unique_id = f"nutrition_supplement_summary_{person_id}"
-        self._attr_name = f"Supplement Intake {person_id.split('.')[-1].title()}"
+        self._attr_name = f"Supplement Intake {person_id_to_str(person_id)}"
         self._attr_native_value = value
         self._attr_device_info = get_device_for_supplement()
         self._attr_extra_state_attributes = attributes

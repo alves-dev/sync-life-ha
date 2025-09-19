@@ -5,8 +5,9 @@ from peewee import (
     SqliteDatabase, BooleanField, DoubleField
 )
 
-from .model_enum import GroupingType, EnumField, RecordType, Periodicity, ValueTrend, Grouping, PaymentMethod, \
+from .model_enum import GroupingType, RecordType, Periodicity, ValueTrend, Grouping, PaymentMethod, \
     GroupingPerson
+from ..database.enum_field import EnumField
 
 db_proxy = Proxy()
 
