@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import Any
 
@@ -71,34 +72,53 @@ class SleepBinarySensor(BinarySensorEntity):
         return self._is_sleeping
 
 
-def calculate_native_value(minutes: int):
+def calculate_native_value(minutes: int) -> str:
     td = timedelta(minutes=minutes)
     hours, remainder = divmod(td.seconds, 3600)
     minutes = remainder // 60
     return f"{hours}:{minutes:02d}"
 
 
-class LastSleepDurationSensor(SensorEntity):
+class BaseSleepSensor(SensorEntity, ABC):
+    "Classe abstrata para centralizar configurações iguais"
+
+    _attr_icon = "mdi:bed-clock"
+
+    _attr_device_class = SensorDeviceClass.DURATION
+    _attr_native_unit_of_measurement = "min"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 0
+
+    @abstractmethod
+    def __init__(self, person: str):
+        pass
+
+
+class LastSleepDurationSensor(BaseSleepSensor):
     """Sensor que mostra a duração do último sono em minutos."""
 
     def __init__(self, person: str, minutes: int):
-        self._minutes = minutes
         self._attr_name = f"{person_id_to_str(person)} Last Sleep Duration"
-        self._attr_native_value = minutes
-        self._attr_device_class = SensorDeviceClass.DURATION
-        self._attr_native_unit_of_measurement = "min"
-        self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_unique_id = f"{person}_last_sleep_duration"
-        self._attr_icon = "mdi:bed-clock"
+        self._attr_native_value = minutes
         self._attr_device_info = get_device_for_sleep(person)
+        self._extra_attr_hours: str = calculate_native_value(minutes)
 
     @property
-    def extra_state_attributes(self) -> dict[str, any]:
-        """Atributos extras mostrados no HA."""
+    def extra_state_attributes(self) -> dict[str, Any]:
         return {
-            'hours': calculate_native_value(self._minutes)
+            'hours': self._extra_attr_hours
         }
 
+
+class RecommendedSleepSensor(BaseSleepSensor):
+    """Sensor para representar os minutos recomendados de sono."""
+
+    def __init__(self, person: str):
+        self._attr_name = f"{person_id_to_str(person)} Recommended Sleep"
+        self._attr_unique_id = f"{person}_recommended_sleep"
+        self._attr_native_value = 480  # 8h como valor padrão
+        self._attr_device_info = get_device_for_sleep(person)
 
 # class AverageSleepDurationSensor(SensorEntity):
 #     """Sensor que mostra a média de duração de sono de X dias."""
@@ -119,22 +139,3 @@ class LastSleepDurationSensor(SensorEntity):
 #             "minutes": self._minutes,
 #             "days": self._days,
 #         }
-
-
-class RecommendedSleepSensor(SensorEntity):
-    """Sensor para representar os minutos recomendados de sono."""
-
-    def __init__(self, person: str):
-        self._attr_name = f"{person_id_to_str(person)} Recommended Sleep"
-        self._attr_unique_id = f"{person}_recommended_sleep"
-        self._attr_native_unit_of_measurement = "min"
-        self._attr_device_class = SensorDeviceClass.DURATION
-        self._attr_state_class = SensorStateClass.MEASUREMENT
-        self._attr_icon = "mdi:sleep-clock"
-        self._attr_native_value = 480  # 8h como valor padrão
-        self._attr_device_info = get_device_for_sleep(person)
-
-    @property
-    def native_value(self) -> int:
-        """Retorna o valor fixo de minutos recomendados."""
-        return self._attr_native_value
