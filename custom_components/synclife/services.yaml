@@ -36,6 +36,16 @@ nutrition_intake_supplement:
       required: true
       selector:
         text:
+    amount:
+      name: Quantidade
+      required: true
+      selector:
+        number:
+    taken_at:
+      name: Data e hora
+      required: false
+      selector:
+        datetime: {}
 
 finance_transaction_monthly:
   name: "Finance: register monthly transaction"

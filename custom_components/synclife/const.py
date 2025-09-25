@@ -23,7 +23,7 @@ ENTRY_FINANCE_NAME = 'Financeiro'
 ENTRY_SLEEP_TRACKING = 'entry-sleep-tracking'
 ENTRY_SLEEP_TRACKING_NAME = 'Sono'
 
-NUTRITION_PERSONS = 'nutrition.persons'
+NUTRITION_VALUES = 'nutrition.values'
 SLEEP_TRACKING_PERSONS = 'sleep.persons'
 
 SENSOR_VEHICLE_MILEAGE = 'sensor-vehicle-mileage'

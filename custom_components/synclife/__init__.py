@@ -18,12 +18,12 @@ from .const import (
     ENTRY_NUTRITION,
     ENTRY_VEHICLES_NAME,
     ENTRY_NUTRITION_NAME,
-    NUTRITION_PERSONS,
     ENTRY_FINANCE,
     ENTRY_FINANCE_NAME,
     ENTRY_SLEEP_TRACKING_NAME,
     ENTRY_SLEEP_TRACKING,
     SLEEP_TRACKING_PERSONS,
+    NUTRITION_VALUES,
 )
 from .database import db_init
 from .finance.ha_service import (
@@ -46,7 +46,7 @@ from .vehicle.service import update_vehicle_maintenances
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.SENSOR, Platform.SELECT]
+PLATFORMS = [Platform.SENSOR]
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -58,8 +58,8 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         hass.data[DOMAIN][MANAGER] = manager
 
     # ----- Values from configuration.yaml ----- #
-    persons = config.get(DOMAIN, {}).get('nutrition', {}).get('persons', [])
-    manager.add(NUTRITION_PERSONS, persons)
+    nutrition_values: list[dict] = config.get(DOMAIN, {}).get('nutrition', {}).get('values', [])
+    manager.add(NUTRITION_VALUES, nutrition_values)
 
     persons = config.get(DOMAIN, {}).get('sleep_tracking', {}).get('persons', [])
     manager.add(SLEEP_TRACKING_PERSONS, persons)
@@ -92,7 +92,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         domain=DOMAIN,
         service=NUTRITION_INTAKE_SUPPLEMENT_NAME,
         service_func=nutrition_intake_supplement,
-        schema=nutrition_intake_supplement_options()
+        schema=nutrition_intake_supplement_options(hass)
     )
 
     hass.services.async_register(

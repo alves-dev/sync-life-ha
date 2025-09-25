@@ -26,11 +26,11 @@ def is_sleeping(person: str) -> bool:
     return last.action == Action.SLEEP
 
 
-def get_last_sleep_duration(person: str) -> int:
+def get_last_sleep_duration(person: str) -> dict:
     """
     Retorna o tempo dormido no último WAKE_UP de uma pessoa.
     """
-    last_wake_up = (
+    last_wake_up: SleepTracking = (
         SleepTracking
         .select()
         .where(
@@ -41,7 +41,10 @@ def get_last_sleep_duration(person: str) -> int:
         .first()
     )
 
-    return last_wake_up.minutes_slept if last_wake_up else 0
+    return {
+        'day': last_wake_up.created_at,
+        'minutes': last_wake_up.minutes_slept if last_wake_up else 0
+    }
 
 
 def get_last_event(person: str) -> SleepTracking:

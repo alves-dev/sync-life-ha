@@ -19,7 +19,7 @@ def get_selects(hass: HomeAssistant) -> list[Any]:
     entities = []
     manager: ObjectManager = hass.data[DOMAIN][MANAGER]
 
-    names: list[str] = get_all_supplements_str()
+    names: list[str] = get_all_supplements_str(hass)
     select = SupplementSelect(names)
 
     entities.append(select)
@@ -36,4 +36,4 @@ class SupplementSelect(SelectEntity):
         self._attr_unique_id = "nutrition_supplement_select"
         self._attr_options = supplements
         self._attr_current_option = supplements[0] if supplements else None
-        self._attr_device_info = get_device_for_supplement()
+        self._attr_device_info = get_device_for_supplement('person.id')
