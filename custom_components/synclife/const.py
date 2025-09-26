@@ -23,7 +23,9 @@ ENTRY_FINANCE_NAME = 'Financeiro'
 ENTRY_SLEEP_TRACKING = 'entry-sleep-tracking'
 ENTRY_SLEEP_TRACKING_NAME = 'Sono'
 
-NUTRITION_VALUES = 'nutrition.values'
+NUTRITION_SUPPLEMENT_VALUES = 'nutrition.supplement.values'
+NUTRITION_LIQUID_VALUES = 'nutrition.liquid.values'
+NUTRITION_LIQUID_GOALS = 'nutrition.liquid.goals'
 SLEEP_TRACKING_PERSONS = 'sleep.persons'
 
 SENSOR_VEHICLE_MILEAGE = 'sensor-vehicle-mileage'

@@ -23,7 +23,9 @@ from .const import (
     ENTRY_SLEEP_TRACKING_NAME,
     ENTRY_SLEEP_TRACKING,
     SLEEP_TRACKING_PERSONS,
-    NUTRITION_VALUES,
+    NUTRITION_SUPPLEMENT_VALUES,
+    NUTRITION_LIQUID_VALUES,
+    NUTRITION_LIQUID_GOALS,
 )
 from .database import db_init
 from .finance.ha_service import (
@@ -34,7 +36,10 @@ from .finance.model import init_finance_db
 from .nutrition.ha_service import (
     NUTRITION_INTAKE_SUPPLEMENT_NAME,
     nutrition_intake_supplement,
-    nutrition_intake_supplement_options
+    nutrition_intake_supplement_schema,
+    NUTRITION_LIQUID_INTAKE_NAME,
+    nutrition_liquid_intake,
+    nutrition_liquid_intake_schema
 )
 from .nutrition.model import init_nutrition_db
 from .sleep_tracking.ha_service import SLEEP_EVENT_NAME, sleep_event_name_options, sleep_event
@@ -46,7 +51,7 @@ from .vehicle.service import update_vehicle_maintenances
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.SENSOR]
+PLATFORMS = [Platform.SENSOR, Platform.SELECT]
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -58,11 +63,15 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         hass.data[DOMAIN][MANAGER] = manager
 
     # ----- Values from configuration.yaml ----- #
-    nutrition_values: list[dict] = config.get(DOMAIN, {}).get('nutrition', {}).get('values', [])
-    manager.add(NUTRITION_VALUES, nutrition_values)
+    nutrition_supplement_values: list[dict] = config[DOMAIN]['nutrition']['supplement']['values']
+    nutrition_liquid_values: list[dict] = config[DOMAIN]['nutrition']['liquid']['values']
+    nutrition_liquid_goals: list[dict] = config[DOMAIN]['nutrition']['liquid']['goals']
+    sleep_tracking_persons: list[str] = config[DOMAIN]['sleep_tracking']['persons']
 
-    persons = config.get(DOMAIN, {}).get('sleep_tracking', {}).get('persons', [])
-    manager.add(SLEEP_TRACKING_PERSONS, persons)
+    manager.add(NUTRITION_SUPPLEMENT_VALUES, nutrition_supplement_values)
+    manager.add(NUTRITION_LIQUID_VALUES, nutrition_liquid_values)
+    manager.add(NUTRITION_LIQUID_GOALS, nutrition_liquid_goals)
+    manager.add(SLEEP_TRACKING_PERSONS, sleep_tracking_persons)
     # ----- Values from configuration.yaml ----- #
 
     # ----- Database config ----- #
@@ -92,7 +101,14 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         domain=DOMAIN,
         service=NUTRITION_INTAKE_SUPPLEMENT_NAME,
         service_func=nutrition_intake_supplement,
-        schema=nutrition_intake_supplement_options(hass)
+        schema=nutrition_intake_supplement_schema(hass)
+    )
+
+    hass.services.async_register(
+        domain=DOMAIN,
+        service=NUTRITION_LIQUID_INTAKE_NAME,
+        service_func=nutrition_liquid_intake,
+        schema=nutrition_liquid_intake_schema(hass)
     )
 
     hass.services.async_register(

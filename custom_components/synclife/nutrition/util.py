@@ -9,5 +9,16 @@ def get_device_for_supplement(person_id: str) -> DeviceInfo:
         identifiers={('nutrition_supplement', person_id)},
         name=person_id_to_str(person_id),
         manufacturer=DOMAIN_NUTRITION,
+        model='Supplementation',
+        entry_type=DeviceEntryType.SERVICE
+    )
+
+
+def get_device_for_liquid(person_id: str) -> DeviceInfo:
+    return DeviceInfo(
+        identifiers={('nutrition_liquid', person_id)},
+        name=person_id_to_str(person_id),
+        manufacturer=DOMAIN_NUTRITION,
+        model='Liquids',
         entry_type=DeviceEntryType.SERVICE
     )

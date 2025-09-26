@@ -12,7 +12,8 @@ from .const import (
     ENTRY_SLEEP_TRACKING_NAME,
 )
 from .finance.sensor import get_sensors as finance_get_sensors
-from .nutrition.sensor import get_sensors as nutrition_get_sensors
+from .nutrition.sensor_liquid import get_sensors as nutrition_liquid_get_sensors
+from .nutrition.sensor_supplement import get_sensors as nutrition_supplement_get_sensors
 from .sleep_tracking.sensor import get_sensors as sleep_get_sensors
 from .vehicle.sensor import get_sensors as vehicle_get_sensors
 
@@ -28,7 +29,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
         entities = vehicle_get_sensors(hass)
 
     if entry_name == ENTRY_NUTRITION_NAME:
-        entities = nutrition_get_sensors(hass)
+        entities = nutrition_supplement_get_sensors(hass)
+        entities.extend(nutrition_liquid_get_sensors(hass))
 
     if entry_name == ENTRY_FINANCE_NAME:
         entities = finance_get_sensors(hass)

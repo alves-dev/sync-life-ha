@@ -8,12 +8,12 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 
-from .service import supplements_status_today
+from .service_supplement import supplements_status_today
 from .util import get_device_for_supplement
 from ..const import (
     DOMAIN,
     MANAGER,
-    NUTRITION_VALUES
+    NUTRITION_SUPPLEMENT_VALUES
 )
 from ..util.manager import ObjectManager
 
@@ -24,7 +24,7 @@ def get_sensors(hass: HomeAssistant) -> list[Any]:
     entities = []
     manager: ObjectManager = hass.data[DOMAIN][MANAGER]
 
-    values_persons: list[dict] = manager.get_by_key(NUTRITION_VALUES)
+    values_persons: list[dict] = manager.get_by_key(NUTRITION_SUPPLEMENT_VALUES)
     persons: list[str] = [value['person'] for value in values_persons]
     persons: set[str] = set(persons)
 

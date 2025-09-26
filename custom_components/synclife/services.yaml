@@ -73,3 +73,30 @@ sleep_event:
       required: true
       selector:
         text:
+
+nutrition_liquid_intake:
+  name: "Nutrition: intake liquids"
+  description: "Insere um liquido para uma pessoa"
+  fields:
+    person_id:
+      name: Pessoa
+      required: true
+      selector:
+        entity:
+          domain:
+            - person
+    liquid:
+      name: Liquido
+      required: true
+      selector:
+        text:
+    amount:
+      name: Quantidade
+      required: true
+      selector:
+        number:
+    taken_at:
+      name: Data e hora
+      required: false
+      selector:
+        datetime: {}

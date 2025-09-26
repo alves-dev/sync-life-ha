@@ -4,24 +4,17 @@ from typing import Any, List
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
 
-from .service import get_all_supplements_str
+from .service_supplement import get_all_supplements_str
 from .util import get_device_for_supplement
-from ..const import (
-    DOMAIN,
-    MANAGER,
-)
-from ..util.manager import ObjectManager
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def get_selects(hass: HomeAssistant) -> list[Any]:
     entities = []
-    manager: ObjectManager = hass.data[DOMAIN][MANAGER]
 
     names: list[str] = get_all_supplements_str(hass)
     select = SupplementSelect(names)
-
     entities.append(select)
 
     return entities
@@ -36,4 +29,4 @@ class SupplementSelect(SelectEntity):
         self._attr_unique_id = "nutrition_supplement_select"
         self._attr_options = supplements
         self._attr_current_option = supplements[0] if supplements else None
-        self._attr_device_info = get_device_for_supplement('person.id')
+        self._attr_device_info = get_device_for_supplement('person.supplement_geral')
