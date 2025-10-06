@@ -178,3 +178,6 @@ async def async_reload_all_entries(hass: HomeAssistant) -> None:
 
     entry = manager.get_by_key(ENTRY_FINANCE)
     await hass.config_entries.async_reload(entry.entry_id)
+
+    entry = manager.get_by_key(ENTRY_SLEEP_TRACKING)
+    await hass.config_entries.async_reload(entry.entry_id)
