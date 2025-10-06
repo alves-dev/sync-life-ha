@@ -26,8 +26,16 @@ from .const import (
     NUTRITION_SUPPLEMENT_VALUES,
     NUTRITION_LIQUID_VALUES,
     NUTRITION_LIQUID_GOALS,
+    ENTRY_EXERCISE,
+    ENTRY_EXERCISE_NAME,
 )
 from .database import db_init
+from .exercice.ha_service import (
+    EXERCISE_ACADEMY_EVENT_NAME,
+    exercise_academy_event_schema,
+    exercise_academy_event
+)
+from .exercice.model import init_exercise_db
 from .finance.ha_service import (
     FINANCE_TRANSACTION_MONTHLY_NAME,
     finance_transaction_monthly
@@ -86,6 +94,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         init_nutrition_db(db)
         init_finance_db(db)
         init_sleep_db(db)
+        init_exercise_db(db)
 
     await hass.async_add_executor_job(setup_orm)
     # ----- Database config ----- #
@@ -124,6 +133,13 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         schema=sleep_event_name_options()
     )
 
+    hass.services.async_register(
+        domain=DOMAIN,
+        service=EXERCISE_ACADEMY_EVENT_NAME,
+        service_func=exercise_academy_event,
+        schema=exercise_academy_event_schema()
+    )
+
     # ----- Services registry ----- #
 
     # ----- background function ----- #
@@ -154,6 +170,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         manager.add(ENTRY_FINANCE, entry)
     elif entry_name == ENTRY_SLEEP_TRACKING_NAME:
         manager.add(ENTRY_SLEEP_TRACKING, entry)
+    elif entry_name == ENTRY_EXERCISE_NAME:
+        manager.add(ENTRY_EXERCISE, entry)
 
     return True
 
@@ -180,4 +198,7 @@ async def async_reload_all_entries(hass: HomeAssistant) -> None:
     await hass.config_entries.async_reload(entry.entry_id)
 
     entry = manager.get_by_key(ENTRY_SLEEP_TRACKING)
+    await hass.config_entries.async_reload(entry.entry_id)
+
+    entry = manager.get_by_key(ENTRY_EXERCISE)
     await hass.config_entries.async_reload(entry.entry_id)

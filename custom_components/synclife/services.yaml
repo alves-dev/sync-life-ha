@@ -100,3 +100,20 @@ nutrition_liquid_intake:
       required: false
       selector:
         datetime: {}
+
+exercise_academy_event:
+  name: "Exercise: Academy save event"
+  description: "Evento para indicar se esta entrando ou saindo"
+  fields:
+    person_id:
+      name: Pessoa
+      required: true
+      selector:
+        entity:
+          domain:
+            - person
+    action:
+      name: Ação
+      required: true
+      selector:
+        text:
