@@ -32,6 +32,10 @@ def get_sensors(hass: HomeAssistant) -> list[Any]:
 
     return entities
 
+#TODO: sensor para dias sem alcool
+#TODO: sensor para dias sem algo ruim diferete de alcool
+#TODO: media de agua nos ultimos x dias (talvez 5 dias)
+
 
 class AbstractLiquidSensor(SensorEntity):
     """Base para sensores de ingestão de líquidos."""
